@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Copy Modifier",
+  "version": "1.0",
+  "description": "Modifies copied text before pasting",
+  "permissions": ["clipboardRead", "activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+ 
+}

